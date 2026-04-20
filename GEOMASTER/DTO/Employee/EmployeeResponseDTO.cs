@@ -8,6 +8,10 @@
         public string? PersonalPhone { get; set; }
         public string? EmployeeCode { get; set; }
         public string? ProfilePhoto { get; set; }
+        public string? DepartmentName { get; set; }
+        public string? DesignationName { get; set; }
         public bool IsActive { get; set; }
+
+
     }
 }

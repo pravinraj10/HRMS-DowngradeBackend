@@ -11,7 +11,6 @@
         public string? PersonalPhone { get; set; }
         public string? EmergencyContact { get; set; }
         public string? Address { get; set; }
-
         public int? DepartmentId { get; set; }
         public int? DesignationId { get; set; }
         public virtual Tbldepartment? Department { get; set; }
@@ -20,14 +19,13 @@
         public string? EmployeeCode { get; set; }
         public int? ReportingManagerId { get; set; }
         public string? Shift { get; set; }
-
         public string? ProfilePhoto { get; set; }
         public string? IdProof { get; set; }
-        public string? EmploymentContract { get; set; }
-
         public string? CreatedBy { get; set; }
         public DateTime? CreatedAt { get; set; }
         public string? UpdatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }
+        public bool IsActive { get; set; } = true;
+        public bool IsDeleted { get; set; } = false;
     }
 }

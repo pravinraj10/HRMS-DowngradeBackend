@@ -26,7 +26,9 @@ namespace GEOMASTER.Service
                 PersonalEmail = x.PersonalEmail,
                 PersonalPhone = x.PersonalPhone,
                 EmployeeCode = x.EmployeeCode,
-                ProfilePhoto = x.ProfilePhoto
+                ProfilePhoto = x.ProfilePhoto,
+                DepartmentName = x.Department?.DepartmentName,
+                DesignationName = x.Designation?.DesignationName
             }).ToList();
         }
 
@@ -42,7 +44,9 @@ namespace GEOMASTER.Service
                 PersonalEmail = x.PersonalEmail,
                 PersonalPhone = x.PersonalPhone,
                 EmployeeCode = x.EmployeeCode,
-                ProfilePhoto = x.ProfilePhoto
+                ProfilePhoto = x.ProfilePhoto,
+                DepartmentName = x.Department?.DepartmentName,
+                DesignationName = x.Designation?.DesignationName
             };
         }
 
@@ -67,8 +71,6 @@ namespace GEOMASTER.Service
             var entity = new Tblemployee
             {
                 FullName = dto.FullName,
-
-                //  ADD THESE (Missing fields)
                 Gender = dto.Gender,
                 DateOfBirth = dto.DateOfBirth,
                 PersonalEmail = dto.PersonalEmail,
@@ -85,14 +87,88 @@ namespace GEOMASTER.Service
 
                 CreatedBy = dto.CreatedBy,
                 CreatedAt = DateTime.Now,
+                IsActive = true,
+                IsDeleted = false,
 
                 // FILES
                 ProfilePhoto = dto.ProfilePhoto != null ? SaveFile(dto.ProfilePhoto) : null,
                 IdProof = dto.IdProof != null ? SaveFile(dto.IdProof) : null,
-                EmploymentContract = dto.EmploymentContract != null ? SaveFile(dto.EmploymentContract) : null
+       
             };
 
             await _repo.Add(entity);
+        }
+        public async Task<bool> Update(int id, CreateEmployeeDTO dto)
+        {
+            var existing = await _repo.GetById(id);
+            if (existing == null) return false;
+
+            existing.FullName = dto.FullName;
+            existing.Gender = dto.Gender;
+            existing.DateOfBirth = dto.DateOfBirth;
+            existing.PersonalEmail = dto.PersonalEmail;
+            existing.PersonalPhone = dto.PersonalPhone;
+            existing.EmergencyContact = dto.EmergencyContact;
+            existing.Address = dto.Address;
+
+            existing.DepartmentId = dto.DepartmentId;
+            existing.DesignationId = dto.DesignationId;
+            existing.JoiningDate = dto.JoiningDate;
+            existing.EmployeeCode = dto.EmployeeCode;
+            existing.ReportingManagerId = dto.ReportingManagerId;
+            existing.Shift = dto.Shift;
+
+            existing.UpdatedAt = DateTime.Now;
+
+            string uploadsPath = Path.Combine(_env.WebRootPath, "uploads");
+
+            if (!Directory.Exists(uploadsPath))
+                Directory.CreateDirectory(uploadsPath);
+
+            string SaveFile(IFormFile file)
+            {
+                var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
+                var filePath = Path.Combine(uploadsPath, fileName);
+
+                using var stream = new FileStream(filePath, FileMode.Create);
+                file.CopyTo(stream);
+
+                return "/uploads/" + fileName;
+            }
+
+            //  Update files only if new ones provided
+            if (dto.ProfilePhoto != null)
+                existing.ProfilePhoto = SaveFile(dto.ProfilePhoto);
+
+            if (dto.IdProof != null)
+                existing.IdProof = SaveFile(dto.IdProof);
+
+            await _repo.Update(existing);
+            return true;
+        }
+        public async Task<bool> Delete(int id)
+        {
+            var existing = await _repo.GetById(id);
+            if (existing == null) return false;
+
+            await _repo.Delete(id);
+            return true;
+        }
+        public async Task<List<EmployeeResponseDTO>> Search(string? search)
+        {
+            var data = await _repo.Search(search);
+
+            return data.Select(x => new EmployeeResponseDTO
+            {
+                Id = x.Id,
+                FullName = x.FullName,
+                PersonalEmail = x.PersonalEmail,
+                PersonalPhone = x.PersonalPhone,
+                EmployeeCode = x.EmployeeCode,
+                ProfilePhoto = x.ProfilePhoto,
+                DepartmentName = x.Department?.DepartmentName,
+                DesignationName = x.Designation?.DesignationName
+            }).ToList();
         }
     }
 

@@ -497,9 +497,6 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.IdProof)
                 .HasColumnName("id_proof");
 
-            entity.Property(e => e.EmploymentContract)
-                .HasColumnName("employment_contract");
-
             entity.Property(e => e.CreatedBy)
                 .HasColumnName("created_by");
 

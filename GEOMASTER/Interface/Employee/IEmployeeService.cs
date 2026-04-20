@@ -7,5 +7,8 @@ namespace GEOMASTER.Interface.Employee
         Task Create(CreateEmployeeDTO dto);
         Task<List<EmployeeResponseDTO>> GetAll();
         Task<EmployeeResponseDTO?> GetById(int id);
+        Task<bool> Update(int id, CreateEmployeeDTO dto);
+        Task<bool> Delete(int id);
+        Task<List<EmployeeResponseDTO>> Search(string? search);
     }
 }

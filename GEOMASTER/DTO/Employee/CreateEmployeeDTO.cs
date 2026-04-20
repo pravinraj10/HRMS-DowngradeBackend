@@ -22,6 +22,5 @@
         //  FILES
         public IFormFile? ProfilePhoto { get; set; }
         public IFormFile? IdProof { get; set; }
-        public IFormFile? EmploymentContract { get; set; }
     }
 }
