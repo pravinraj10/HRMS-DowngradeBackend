@@ -15,12 +15,18 @@ namespace GEOMASTER.Repository
 
         public async Task<List<Tblemployee>> GetAll()
         {
-            return await _context.Set<Tblemployee>().ToListAsync();
+            return await _context.Tblemployees
+                .Where(x => x.IsActive && !x.IsDeleted)
+                .Include(x => x.Department)
+                .Include(x => x.Designation)
+                .ToListAsync();
         }
-
         public async Task<Tblemployee?> GetById(int id)
         {
-            return await _context.Set<Tblemployee>().FindAsync(id);
+            return await _context.Tblemployees
+                .Include(x => x.Department)
+                .Include(x => x.Designation)
+                .FirstOrDefaultAsync(x => x.Id == id && x.IsActive && !x.IsDeleted);
         }
 
         public async Task Add(Tblemployee emp)
@@ -28,5 +34,42 @@ namespace GEOMASTER.Repository
             await _context.AddAsync(emp);
             await _context.SaveChangesAsync();
         }
+        public async Task Update(Tblemployee emp)
+        {
+            _context.Update(emp);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task Delete(int id)
+        {
+            var entity = await _context.Set<Tblemployee>().FindAsync(id);
+            if (entity != null)
+            {
+                entity.IsDeleted = true;
+                await _context.SaveChangesAsync();
+            }
+        }
+        public async Task<List<Tblemployee>> Search(string? search)
+        {
+            var query = _context.Tblemployees
+                .Where(x => x.IsActive && !x.IsDeleted)
+                .Include(x => x.Department)
+                .Include(x => x.Designation)
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                search = search.ToLower();
+
+                query = query.Where(x =>
+                    x.FullName.ToLower().Contains(search) ||
+                    x.EmployeeCode.ToLower().Contains(search) ||
+                    x.PersonalEmail.ToLower().Contains(search) ||
+                    x.PersonalPhone.Contains(search));
+            }
+
+            return await query.ToListAsync();
+        }
+
     }
 }
