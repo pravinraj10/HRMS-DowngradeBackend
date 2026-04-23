@@ -16,7 +16,7 @@ namespace GEOMASTER.Repository
         public async Task<List<Tblemployee>> GetAll()
         {
             return await _context.Tblemployees
-                .Where(x => x.IsActive && !x.IsDeleted)
+                .Where(x => !x.IsDeleted)
                 .Include(x => x.Department)
                 .Include(x => x.Designation)
                 .ToListAsync();
@@ -52,7 +52,7 @@ namespace GEOMASTER.Repository
         public async Task<List<Tblemployee>> Search(string? search)
         {
             var query = _context.Tblemployees
-                .Where(x => x.IsActive && !x.IsDeleted)
+                .Where(x => !x.IsDeleted)
                 .Include(x => x.Department)
                 .Include(x => x.Designation)
                 .AsQueryable();
@@ -62,13 +62,23 @@ namespace GEOMASTER.Repository
                 search = search.ToLower();
 
                 query = query.Where(x =>
-                    x.FullName.ToLower().Contains(search) ||
-                    x.EmployeeCode.ToLower().Contains(search) ||
-                    x.PersonalEmail.ToLower().Contains(search) ||
-                    x.PersonalPhone.Contains(search));
+                (x.FullName != null && x.FullName.ToLower().Contains(search)) ||
+                (x.EmployeeCode != null && x.EmployeeCode.ToLower().Contains(search)) ||
+                (x.PersonalEmail != null && x.PersonalEmail.ToLower().Contains(search)) ||
+                (x.PersonalPhone != null && x.PersonalPhone.Contains(search))
+                );
             }
 
             return await query.ToListAsync();
+        }
+        public async Task<bool> SetActive(int id, bool isActive)
+        {
+            var emp = await _context.Tblemployees.FindAsync(id);
+            if (emp == null) return false;
+
+            emp.IsActive = isActive;
+            await _context.SaveChangesAsync();
+            return true;
         }
 
     }

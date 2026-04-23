@@ -60,5 +60,13 @@ namespace GEOMASTER.Controllers
             var result = await _service.Search(search);
             return Ok(result);
         }
+        [HttpPut("set-active/{id}")]
+        public async Task<IActionResult> SetActive(int id, [FromQuery] bool isActive)
+        {
+            var result = await _service.SetActive(id, isActive);
+            if (!result) return NotFound();
+
+            return Ok("Status updated");
+        }
     }
 }

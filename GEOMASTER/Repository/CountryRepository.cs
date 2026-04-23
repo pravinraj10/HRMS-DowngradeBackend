@@ -46,10 +46,24 @@ public class CountryRepository : ICountryRepository
 
     public void Delete(int id)
     {
-        var data = _context.Tblcountries.Find(id);
-        if (data != null)
+        var country = _context.Tblcountries.Find(id);
+        if (country != null)
         {
-            data.IsDelete = true;  //soft
+            country.IsDelete = true;
+
+            //  Delete related states
+            var states = _context.Tblstates.Where(s => s.CountryId == id).ToList();
+            foreach (var state in states)
+            {
+                state.IsDelete = true;
+
+                //  Delete related cities
+                var cities = _context.Tblcities.Where(c => c.StateId == state.Id).ToList();
+                foreach (var city in cities)
+                {
+                    city.IsDelete = true;
+                }
+            }
         }
     }
 

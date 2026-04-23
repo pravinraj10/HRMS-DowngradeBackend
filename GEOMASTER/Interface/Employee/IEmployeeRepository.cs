@@ -10,6 +10,7 @@ namespace GEOMASTER.Interface.Employee
         Task Add(Tblemployee emp);
         Task Update(Tblemployee emp);
         Task Delete(int id);
+        Task<bool> SetActive(int id, bool isActive);
         Task<List<Tblemployee>> Search(string? search);
     }
 }

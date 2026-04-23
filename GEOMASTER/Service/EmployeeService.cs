@@ -23,12 +23,30 @@ namespace GEOMASTER.Service
             {
                 Id = x.Id,
                 FullName = x.FullName,
+                Gender = x.Gender,
+                DateOfBirth = x.DateOfBirth,
+
                 PersonalEmail = x.PersonalEmail,
                 PersonalPhone = x.PersonalPhone,
-                EmployeeCode = x.EmployeeCode,
-                ProfilePhoto = x.ProfilePhoto,
+                EmergencyContact = x.EmergencyContact,
+                Address = x.Address,
+
+                DepartmentId = x.DepartmentId,
                 DepartmentName = x.Department?.DepartmentName,
-                DesignationName = x.Designation?.DesignationName
+
+                DesignationId = x.DesignationId,
+                DesignationName = x.Designation?.DesignationName,
+
+                JoiningDate = x.JoiningDate,
+                EmployeeCode = x.EmployeeCode,
+                ReportingManagerId = x.ReportingManagerId,
+                Shift = x.Shift,
+
+                ProfilePhoto = x.ProfilePhoto,
+                IdProof = x.IdProof,
+
+                IsActive = x.IsActive,
+                CreatedBy = x.CreatedBy
             }).ToList();
         }
 
@@ -41,12 +59,30 @@ namespace GEOMASTER.Service
             {
                 Id = x.Id,
                 FullName = x.FullName,
+                Gender = x.Gender,
+                DateOfBirth = x.DateOfBirth,
+
                 PersonalEmail = x.PersonalEmail,
                 PersonalPhone = x.PersonalPhone,
+                EmergencyContact = x.EmergencyContact,
+                Address = x.Address,
+
                 EmployeeCode = x.EmployeeCode,
-                ProfilePhoto = x.ProfilePhoto,
+                JoiningDate = x.JoiningDate,
+                Shift = x.Shift,
+
+                DepartmentId = x.DepartmentId,
                 DepartmentName = x.Department?.DepartmentName,
-                DesignationName = x.Designation?.DesignationName
+
+                DesignationId = x.DesignationId,
+                DesignationName = x.Designation?.DesignationName,
+
+                ReportingManagerId = x.ReportingManagerId,
+
+                ProfilePhoto = x.ProfilePhoto,
+                IdProof = x.IdProof,
+
+                CreatedBy = x.CreatedBy
             };
         }
 
@@ -162,13 +198,35 @@ namespace GEOMASTER.Service
             {
                 Id = x.Id,
                 FullName = x.FullName,
+                Gender = x.Gender,
+                DateOfBirth = x.DateOfBirth,
+
                 PersonalEmail = x.PersonalEmail,
                 PersonalPhone = x.PersonalPhone,
-                EmployeeCode = x.EmployeeCode,
-                ProfilePhoto = x.ProfilePhoto,
+                EmergencyContact = x.EmergencyContact,
+                Address = x.Address,
+
+                DepartmentId = x.DepartmentId,
                 DepartmentName = x.Department?.DepartmentName,
-                DesignationName = x.Designation?.DesignationName
+
+                DesignationId = x.DesignationId,
+                DesignationName = x.Designation?.DesignationName,
+
+                JoiningDate = x.JoiningDate,
+                EmployeeCode = x.EmployeeCode,
+                ReportingManagerId = x.ReportingManagerId,
+                Shift = x.Shift,
+
+                ProfilePhoto = x.ProfilePhoto,
+                IdProof = x.IdProof,
+
+                IsActive = x.IsActive,
+                CreatedBy = x.CreatedBy
             }).ToList();
+        }
+        public async Task<bool> SetActive(int id, bool isActive)
+        {
+            return await _repo.SetActive(id, isActive);
         }
     }
 
