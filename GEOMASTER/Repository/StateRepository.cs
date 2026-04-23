@@ -54,10 +54,17 @@ namespace GEOMASTER.Repository
 
         public void Delete(int id)
         {
-            var data = _context.Tblstates.Find(id);
-            if (data != null)
+            var state = _context.Tblstates.Find(id);
+            if (state != null)
             {
-                data.IsDelete = true;
+                state.IsDelete = true;
+
+                //  Delete related cities
+                var cities = _context.Tblcities.Where(c => c.StateId == id).ToList();
+                foreach (var city in cities)
+                {
+                    city.IsDelete = true;
+                }
             }
         }
 

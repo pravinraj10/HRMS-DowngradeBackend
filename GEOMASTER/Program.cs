@@ -26,8 +26,6 @@ builder.Services.AddControllers()
 //connection string
     builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-builder.Services.AddDbContext<AppDbContext>();
 // country
 builder.Services.AddScoped<ICountryRepository, CountryRepository>();
 builder.Services.AddScoped<ICountryService, CountryService>();
@@ -72,11 +70,11 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build(); // ❗ AFTER all services
-
+app.UseStaticFiles(); // Must be before routing/auth
 //  Middleware
 app.UseHttpsRedirection();
 app.UseCors("AllowAll");
-app.UseStaticFiles(); // Must be before routing/auth
+
 
 // Enable Swagger UI
 app.UseSwagger();
