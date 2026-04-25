@@ -1,5 +1,6 @@
 ﻿using GEOMASTER.Interface.Employee;
 using GEOMASTER.Models;
+using GEOMASTER.Models.GEOMASTER.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace GEOMASTER.Repository
@@ -19,6 +20,7 @@ namespace GEOMASTER.Repository
                 .Where(x => !x.IsDeleted)
                 .Include(x => x.Department)
                 .Include(x => x.Designation)
+                 .Include(x => x.ReportingManager)
                 .ToListAsync();
         }
         public async Task<Tblemployee?> GetById(int id)
@@ -26,6 +28,7 @@ namespace GEOMASTER.Repository
             return await _context.Tblemployees
                 .Include(x => x.Department)
                 .Include(x => x.Designation)
+                .Include(x => x.ReportingManager)
                 .FirstOrDefaultAsync(x => x.Id == id && x.IsActive && !x.IsDeleted);
         }
 
@@ -79,6 +82,12 @@ namespace GEOMASTER.Repository
             emp.IsActive = isActive;
             await _context.SaveChangesAsync();
             return true;
+        }
+        public async Task<List<Tblrole>> GetRolesDropdown()
+        {
+            return await _context.Tblroles
+                .Where(x => x.IsActive && !x.IsDeleted)
+                .ToListAsync();
         }
 
     }

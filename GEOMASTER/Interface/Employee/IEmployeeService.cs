@@ -11,5 +11,6 @@ namespace GEOMASTER.Interface.Employee
         Task<bool> Delete(int id);
         Task<bool> SetActive(int id, bool isActive);
         Task<List<EmployeeResponseDTO>> Search(string? search);
+        Task<List<RoleDropdownDTO>> GetRolesDropdown();
     }
 }

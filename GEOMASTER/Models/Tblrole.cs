@@ -17,9 +17,9 @@
 
             public string? Description { get; set; }
 
-            public bool? IsActive { get; set; }
+            public bool IsActive { get; set; }
 
-            public bool? IsDeleted { get; set; }
+            public bool IsDeleted { get; set; }
 
             public DateTime? CreatedAt { get; set; }
 
@@ -31,6 +31,9 @@
 
             //  Navigation Properties
             public virtual Tbldepartment? Department { get; set; }
+
+            public virtual ICollection<Tblemployee> Employees { get; set; }
+                = new List<Tblemployee>();
 
         }
     }

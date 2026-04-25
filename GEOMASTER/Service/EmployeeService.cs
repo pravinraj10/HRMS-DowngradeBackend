@@ -78,6 +78,7 @@ namespace GEOMASTER.Service
                 DesignationName = x.Designation?.DesignationName,
 
                 ReportingManagerId = x.ReportingManagerId,
+                ReportingManagerName = x.ReportingManager?.RoleName,
 
                 ProfilePhoto = x.ProfilePhoto,
                 IdProof = x.IdProof,
@@ -215,6 +216,7 @@ namespace GEOMASTER.Service
                 JoiningDate = x.JoiningDate,
                 EmployeeCode = x.EmployeeCode,
                 ReportingManagerId = x.ReportingManagerId,
+                ReportingManagerName = x.ReportingManager?.RoleName,
                 Shift = x.Shift,
 
                 ProfilePhoto = x.ProfilePhoto,
@@ -227,6 +229,16 @@ namespace GEOMASTER.Service
         public async Task<bool> SetActive(int id, bool isActive)
         {
             return await _repo.SetActive(id, isActive);
+        }
+        public async Task<List<RoleDropdownDTO>> GetRolesDropdown()
+        {
+            var roles = await _repo.GetRolesDropdown();
+
+            return roles.Select(x => new RoleDropdownDTO
+            {
+                Id = x.Id,
+                RoleName = x.RoleName
+            }).ToList();
         }
     }
 
