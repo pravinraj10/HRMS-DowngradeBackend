@@ -20,6 +20,7 @@
     public DateTime? JoiningDate { get; set; }
     public string? EmployeeCode { get; set; }
     public int? ReportingManagerId { get; set; }
+    public string? ReportingManagerName { get; set; }
     public string? Shift { get; set; }
 
     public string? ProfilePhoto { get; set; } //  string path

@@ -1,4 +1,5 @@
 ﻿using GEOMASTER.Models;
+using GEOMASTER.Models.GEOMASTER.Models;
 
 namespace GEOMASTER.Interface.Employee
 {
@@ -12,5 +13,6 @@ namespace GEOMASTER.Interface.Employee
         Task Delete(int id);
         Task<bool> SetActive(int id, bool isActive);
         Task<List<Tblemployee>> Search(string? search);
+        Task<List<Tblrole>> GetRolesDropdown();
     }
 }

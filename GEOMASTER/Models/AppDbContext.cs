@@ -484,8 +484,9 @@ public partial class AppDbContext : DbContext
                 .HasColumnName("employee_code")
                 .HasMaxLength(50);
 
+            // FIXED
             entity.Property(e => e.ReportingManagerId)
-                .HasColumnName("reporting_manager_id");
+                .HasColumnName("reporting_manager");
 
             entity.Property(e => e.Shift)
                 .HasColumnName("shift")
@@ -509,17 +510,24 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.UpdatedAt)
                 .HasColumnName("updated_at");
 
-            //  FK: Department
-            entity.HasOne(d => d.Department)
-                .WithMany(p => p.Tblemployees)
-                .HasForeignKey(d => d.DepartmentId)
+            // Department FK
+            entity.HasOne(e => e.Department)
+                .WithMany(d => d.Tblemployees)
+                .HasForeignKey(e => e.DepartmentId)
                 .HasConstraintName("FK_emp_department");
 
-            //  FK: Designation
-            entity.HasOne(d => d.Designation)
-                .WithMany(p => p.Tblemployees)
-                .HasForeignKey(d => d.DesignationId)
+            // Designation FK
+            entity.HasOne(e => e.Designation)
+                .WithMany(d => d.Tblemployees)
+                .HasForeignKey(e => e.DesignationId)
                 .HasConstraintName("FK_emp_designation");
+
+            // Reporting Manager FK -> tblroles
+            entity.HasOne(e => e.ReportingManager)
+                .WithMany(r => r.Employees)
+                .HasForeignKey(e => e.ReportingManagerId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("FK_Employee_Role");
         });
 
         OnModelCreatingPartial(modelBuilder);

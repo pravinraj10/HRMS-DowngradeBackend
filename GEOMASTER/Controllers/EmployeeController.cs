@@ -1,7 +1,7 @@
 ﻿using GEOMASTER.DTO.Employee;
 using GEOMASTER.Interface.Employee;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace GEOMASTER.Controllers
 {
@@ -68,5 +68,16 @@ namespace GEOMASTER.Controllers
 
             return Ok("Status updated");
         }
+        [HttpGet("dropdown")]
+        public async Task<IActionResult> GetRoles()
+        {
+            var data = await _service.GetRolesDropdown();
+
+            return Ok(data.Select(x => new {
+                id = x.Id,
+                roleName = x.RoleName
+            }));
+        }
     }
 }
+
