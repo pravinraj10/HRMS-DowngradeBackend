@@ -15,28 +15,44 @@ public partial class AppDbContext : DbContext
         : base(options)
     {
     }
-
     public virtual DbSet<Tblbusinessentity> Tblbusinessentities { get; set; }
-
     public virtual DbSet<Tblcity> Tblcities { get; set; }
-
     public virtual DbSet<Tblcountry> Tblcountries { get; set; }
-
     public virtual DbSet<Tblstate> Tblstates { get; set; }
-
     public virtual DbSet<Tblbusinessunit> Tblbusinessunits { get; set; }
-
     public virtual DbSet<Tbldepartment> Tbldepartments { get; set; }
-
     public virtual DbSet<Tblholiday> Tblholidays { get; set; }
-
     public virtual DbSet<Tbldesignation> Tbldesignations { get; set; }
-
     public virtual DbSet<Tblrole> Tblroles { get; set; }
     public virtual DbSet<Tblemployee> Tblemployees { get; set; }
-
+    public virtual DbSet<TblMenu> TblMenus { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<TblMenu>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.DisplayOrder)
+                .HasDefaultValue(1);
+
+            entity.Property(e => e.Icon)
+                .HasMaxLength(50);
+
+            entity.Property(e => e.IsActive)
+                .HasDefaultValue(true);
+
+            entity.Property(e => e.Label)
+                .HasMaxLength(100);
+
+            entity.Property(e => e.Url)
+                .HasMaxLength(200);
+
+            entity.HasOne(x => x.Parent)
+                .WithMany(x => x.Children)
+                .HasForeignKey(x => x.ParentId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
         modelBuilder.Entity<Tblbusinessentity>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__tblbusin__3213E83F2985B272");

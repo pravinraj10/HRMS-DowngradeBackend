@@ -33,7 +33,7 @@ public class DepartmentController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(DepartmentCreateDTO dto)
+    public async Task<IActionResult> Create([FromBody] DepartmentCreateDTO dto)
     {
         await _service.Create(dto);
         return Ok("Created Successfully");

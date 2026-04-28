@@ -11,24 +11,113 @@ public class DepartmentService : IDepartmentService
         _repo = repo;
     }
 
+    // =========================
+    // GET ALL
+    // =========================
     public async Task<List<DepartmentResponseDTO>> GetAll()
     {
         var data = await _repo.GetAll();
 
-        return data.Select(x => new DepartmentResponseDTO
-        {
-            Id = x.Id,
-            DepartmentName = x.DepartmentName,
-            Description = x.Description,
-            IsActive = x.IsActive
-        }).ToList();
+        if (data == null)
+            throw new Exception("No department data found.");
+
+        return data.Select(MapToDTO).ToList();
     }
 
-    public async Task<DepartmentResponseDTO?> GetById(int id)
+    // =========================
+    // GET BY ID
+    // =========================
+    public async Task<DepartmentResponseDTO> GetById(int id)
     {
         var x = await _repo.GetById(id);
-        if (x == null) return null;
 
+        if (x == null)
+            throw new KeyNotFoundException($"Department with ID {id} was not found.");
+
+        return MapToDTO(x);
+    }
+
+    // =========================
+    // CREATE
+    // =========================
+    public async Task Create(DepartmentCreateDTO dto)
+    {
+        ValidateCreate(dto);
+
+        var entity = new Tbldepartment
+        {
+            DepartmentName = dto.DepartmentName.Trim(),
+            Description = dto.Description,
+            IsActive = true,
+            IsDelete = false,
+        };
+
+        await _repo.Add(entity);
+    }
+
+    // =========================
+    // UPDATE
+    // =========================
+    public async Task Update(DepartmentUpdateDTO dto)
+    {
+        ValidateUpdate(dto);
+
+        var existing = await _repo.GetById(dto.Id);
+
+        if (existing == null)
+            throw new KeyNotFoundException($"Department with ID {dto.Id} was not found.");
+
+        existing.DepartmentName = dto.DepartmentName.Trim();
+        existing.Description = dto.Description;
+        existing.IsActive = dto.IsActive;
+
+        existing.UpdatedAt = DateTime.UtcNow;
+        existing.UpdatedBy = dto.UpdatedBy;
+
+        await _repo.Update(existing);
+    }
+
+    // =========================
+    // DELETE
+    // =========================
+    public async Task Delete(int id)
+    {
+        var existing = await _repo.GetById(id);
+
+        if (existing == null)
+            throw new KeyNotFoundException($"Department with ID {id} was not found.");
+
+        await _repo.Delete(id);
+    }
+
+    // =========================
+    // SEARCH
+    // =========================
+    public async Task<List<DepartmentResponseDTO>> Search(string? searchTerm)
+    {
+        var data = await _repo.Search(searchTerm ?? string.Empty);
+
+        return data.Select(MapToDTO).ToList();
+    }
+
+    // =========================
+    // ACTIVE STATUS
+    // =========================
+    public async Task SetActive(int id, bool isActive)
+    {
+        var existing = await _repo.GetById(id);
+
+        if (existing == null)
+            throw new KeyNotFoundException($"Department with ID {id} was not found.");
+
+        await _repo.SetActive(id, isActive);
+    }
+
+    // =========================
+    // MAPPER
+    // =========================
+    private DepartmentResponseDTO MapToDTO(Tbldepartment x)
+    {
         return new DepartmentResponseDTO
         {
             Id = x.Id,
@@ -38,49 +127,27 @@ public class DepartmentService : IDepartmentService
         };
     }
 
-    public async Task Create(DepartmentCreateDTO dto)
+    // =========================
+    // VALIDATION
+    // =========================
+    private void ValidateCreate(DepartmentCreateDTO dto)
     {
-        var entity = new Tbldepartment
-        {
-            DepartmentName = dto.DepartmentName,
-            Description = dto.Description
-        };
+        if (dto == null)
+            throw new ArgumentNullException(nameof(dto));
 
-        await _repo.Add(entity);
+        if (string.IsNullOrWhiteSpace(dto.DepartmentName))
+            throw new ArgumentException("DepartmentName is required.");
     }
 
-    public async Task Update(DepartmentUpdateDTO dto)
+    private void ValidateUpdate(DepartmentUpdateDTO dto)
     {
-        var existing = await _repo.GetById(dto.Id);
-        if (existing == null) return;
+        if (dto == null)
+            throw new ArgumentNullException(nameof(dto));
 
-        existing.DepartmentName = dto.DepartmentName;
-        existing.Description = dto.Description;
-        existing.IsActive = dto.IsActive;
+        if (dto.Id <= 0)
+            throw new ArgumentException("Invalid Department Id.");
 
-        await _repo.Update(existing);
-    }
-
-    public async Task Delete(int id)
-    {
-        await _repo.Delete(id);
-    }
-
-    public async Task<List<DepartmentResponseDTO>> Search(string? searchTerm)
-    {
-        var data = await _repo.Search(searchTerm);
-
-        return data.Select(x => new DepartmentResponseDTO
-        {
-            Id = x.Id,
-            DepartmentName = x.DepartmentName,
-            Description = x.Description,
-            IsActive = x.IsActive
-        }).ToList();
-    }
-
-    public async Task SetActive(int id, bool isActive)
-    {
-        await _repo.SetActive(id, isActive);
+        if (string.IsNullOrWhiteSpace(dto.DepartmentName))
+            throw new ArgumentException("DepartmentName is required.");
     }
 }

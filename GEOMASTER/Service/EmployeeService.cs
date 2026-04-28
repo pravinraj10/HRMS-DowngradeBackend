@@ -15,101 +15,42 @@ namespace GEOMASTER.Service
             _env = env;
         }
 
+        // =========================
+        // GET ALL
+        // =========================
         public async Task<List<EmployeeResponseDTO>> GetAll()
         {
             var data = await _repo.GetAll();
 
-            return data.Select(x => new EmployeeResponseDTO
-            {
-                Id = x.Id,
-                FullName = x.FullName,
-                Gender = x.Gender,
-                DateOfBirth = x.DateOfBirth,
-
-                PersonalEmail = x.PersonalEmail,
-                PersonalPhone = x.PersonalPhone,
-                EmergencyContact = x.EmergencyContact,
-                Address = x.Address,
-
-                DepartmentId = x.DepartmentId,
-                DepartmentName = x.Department?.DepartmentName,
-
-                DesignationId = x.DesignationId,
-                DesignationName = x.Designation?.DesignationName,
-
-                JoiningDate = x.JoiningDate,
-                EmployeeCode = x.EmployeeCode,
-                ReportingManagerId = x.ReportingManagerId,
-                Shift = x.Shift,
-
-                ProfilePhoto = x.ProfilePhoto,
-                IdProof = x.IdProof,
-
-                IsActive = x.IsActive,
-                CreatedBy = x.CreatedBy
-            }).ToList();
+            return data.Select(MapToDTO).ToList();
         }
 
-        public async Task<EmployeeResponseDTO?> GetById(int id)
+        // =========================
+        // GET BY ID
+        // =========================
+        public async Task<EmployeeResponseDTO> GetById(int id)
         {
             var x = await _repo.GetById(id);
-            if (x == null) return null;
 
-            return new EmployeeResponseDTO
-            {
-                Id = x.Id,
-                FullName = x.FullName,
-                Gender = x.Gender,
-                DateOfBirth = x.DateOfBirth,
+            if (x == null)
+                throw new KeyNotFoundException($"Employee with ID {id} not found.");
 
-                PersonalEmail = x.PersonalEmail,
-                PersonalPhone = x.PersonalPhone,
-                EmergencyContact = x.EmergencyContact,
-                Address = x.Address,
-
-                EmployeeCode = x.EmployeeCode,
-                JoiningDate = x.JoiningDate,
-                Shift = x.Shift,
-
-                DepartmentId = x.DepartmentId,
-                DepartmentName = x.Department?.DepartmentName,
-
-                DesignationId = x.DesignationId,
-                DesignationName = x.Designation?.DesignationName,
-
-                ReportingManagerId = x.ReportingManagerId,
-                ReportingManagerName = x.ReportingManager?.RoleName,
-
-                ProfilePhoto = x.ProfilePhoto,
-                IdProof = x.IdProof,
-
-                CreatedBy = x.CreatedBy
-            };
+            return MapToDTO(x);
         }
 
+        // =========================
+        // CREATE
+        // =========================
         public async Task Create(CreateEmployeeDTO dto)
         {
-            string uploadsPath = Path.Combine(_env.WebRootPath, "uploads");
-
-            if (!Directory.Exists(uploadsPath))
-                Directory.CreateDirectory(uploadsPath);
-
-            string SaveFile(IFormFile file)
-            {
-                var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
-                var filePath = Path.Combine(uploadsPath, fileName);
-
-                using var stream = new FileStream(filePath, FileMode.Create);
-                file.CopyTo(stream);
-
-                return "/uploads/" + fileName;
-            }
+            Validate(dto);
 
             var entity = new Tblemployee
             {
-                FullName = dto.FullName,
+                FullName = dto.FullName.Trim(),
                 Gender = dto.Gender,
                 DateOfBirth = dto.DateOfBirth,
+
                 PersonalEmail = dto.PersonalEmail,
                 PersonalPhone = dto.PersonalPhone,
                 EmergencyContact = dto.EmergencyContact,
@@ -123,26 +64,33 @@ namespace GEOMASTER.Service
                 Shift = dto.Shift,
 
                 CreatedBy = dto.CreatedBy,
-                CreatedAt = DateTime.Now,
+                CreatedAt = DateTime.UtcNow,
                 IsActive = true,
                 IsDeleted = false,
 
-                // FILES
-                ProfilePhoto = dto.ProfilePhoto != null ? SaveFile(dto.ProfilePhoto) : null,
-                IdProof = dto.IdProof != null ? SaveFile(dto.IdProof) : null,
-       
+                ProfilePhoto = SaveFile(dto.ProfilePhoto),
+                IdProof = SaveFile(dto.IdProof)
             };
 
             await _repo.Add(entity);
         }
+
+        // =========================
+        // UPDATE
+        // =========================
         public async Task<bool> Update(int id, CreateEmployeeDTO dto)
         {
             var existing = await _repo.GetById(id);
-            if (existing == null) return false;
 
-            existing.FullName = dto.FullName;
+            if (existing == null)
+                throw new KeyNotFoundException($"Employee with ID {id} not found.");
+
+            Validate(dto);
+
+            existing.FullName = dto.FullName.Trim();
             existing.Gender = dto.Gender;
             existing.DateOfBirth = dto.DateOfBirth;
+
             existing.PersonalEmail = dto.PersonalEmail;
             existing.PersonalPhone = dto.PersonalPhone;
             existing.EmergencyContact = dto.EmergencyContact;
@@ -155,25 +103,8 @@ namespace GEOMASTER.Service
             existing.ReportingManagerId = dto.ReportingManagerId;
             existing.Shift = dto.Shift;
 
-            existing.UpdatedAt = DateTime.Now;
+            existing.UpdatedAt = DateTime.UtcNow;
 
-            string uploadsPath = Path.Combine(_env.WebRootPath, "uploads");
-
-            if (!Directory.Exists(uploadsPath))
-                Directory.CreateDirectory(uploadsPath);
-
-            string SaveFile(IFormFile file)
-            {
-                var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
-                var filePath = Path.Combine(uploadsPath, fileName);
-
-                using var stream = new FileStream(filePath, FileMode.Create);
-                file.CopyTo(stream);
-
-                return "/uploads/" + fileName;
-            }
-
-            //  Update files only if new ones provided
             if (dto.ProfilePhoto != null)
                 existing.ProfilePhoto = SaveFile(dto.ProfilePhoto);
 
@@ -183,19 +114,84 @@ namespace GEOMASTER.Service
             await _repo.Update(existing);
             return true;
         }
+
+        // =========================
+        // DELETE
+        // =========================
         public async Task<bool> Delete(int id)
         {
             var existing = await _repo.GetById(id);
-            if (existing == null) return false;
+
+            if (existing == null)
+                throw new KeyNotFoundException($"Employee with ID {id} not found.");
 
             await _repo.Delete(id);
             return true;
         }
+
+        // =========================
+        // SEARCH
+        // =========================
         public async Task<List<EmployeeResponseDTO>> Search(string? search)
         {
-            var data = await _repo.Search(search);
+            var data = await _repo.Search(search ?? string.Empty);
+            return data.Select(MapToDTO).ToList();
+        }
 
-            return data.Select(x => new EmployeeResponseDTO
+        // =========================
+        // ACTIVE STATUS
+        // =========================
+        public async Task<bool> SetActive(int id, bool isActive)
+        {
+            var existing = await _repo.GetById(id);
+
+            if (existing == null)
+                throw new KeyNotFoundException($"Employee with ID {id} not found.");
+
+            return await _repo.SetActive(id, isActive);
+        }
+
+        // =========================
+        // ROLE DROPDOWN
+        // =========================
+        public async Task<List<RoleDropdownDTO>> GetRolesDropdown()
+        {
+            var roles = await _repo.GetRolesDropdown();
+
+            return roles.Select(x => new RoleDropdownDTO
+            {
+                Id = x.Id,
+                RoleName = x.RoleName
+            }).ToList();
+        }
+
+        // =========================
+        // FILE UPLOAD (COMMON)
+        // =========================
+        private string? SaveFile(IFormFile? file)
+        {
+            if (file == null) return null;
+
+            string uploadsPath = Path.Combine(_env.WebRootPath, "uploads");
+
+            if (!Directory.Exists(uploadsPath))
+                Directory.CreateDirectory(uploadsPath);
+
+            var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
+            var filePath = Path.Combine(uploadsPath, fileName);
+
+            using var stream = new FileStream(filePath, FileMode.Create);
+            file.CopyTo(stream);
+
+            return "/uploads/" + fileName;
+        }
+
+        // =========================
+        // MAPPER (REDUCES DUPLICATION)
+        // =========================
+        private EmployeeResponseDTO MapToDTO(Tblemployee x)
+        {
+            return new EmployeeResponseDTO
             {
                 Id = x.Id,
                 FullName = x.FullName,
@@ -213,10 +209,11 @@ namespace GEOMASTER.Service
                 DesignationId = x.DesignationId,
                 DesignationName = x.Designation?.DesignationName,
 
-                JoiningDate = x.JoiningDate,
-                EmployeeCode = x.EmployeeCode,
                 ReportingManagerId = x.ReportingManagerId,
                 ReportingManagerName = x.ReportingManager?.RoleName,
+
+                EmployeeCode = x.EmployeeCode,
+                JoiningDate = x.JoiningDate,
                 Shift = x.Shift,
 
                 ProfilePhoto = x.ProfilePhoto,
@@ -224,22 +221,25 @@ namespace GEOMASTER.Service
 
                 IsActive = x.IsActive,
                 CreatedBy = x.CreatedBy
-            }).ToList();
+            };
         }
-        public async Task<bool> SetActive(int id, bool isActive)
-        {
-            return await _repo.SetActive(id, isActive);
-        }
-        public async Task<List<RoleDropdownDTO>> GetRolesDropdown()
-        {
-            var roles = await _repo.GetRolesDropdown();
 
-            return roles.Select(x => new RoleDropdownDTO
-            {
-                Id = x.Id,
-                RoleName = x.RoleName
-            }).ToList();
+        // =========================
+        // VALIDATION
+        // =========================
+        private void Validate(CreateEmployeeDTO dto)
+        {
+            if (dto == null)
+                throw new ArgumentNullException(nameof(dto));
+
+            if (string.IsNullOrWhiteSpace(dto.FullName))
+                throw new ArgumentException("FullName is required.");
+
+            if (dto.DepartmentId <= 0)
+                throw new ArgumentException("DepartmentId is required.");
+
+            if (dto.DesignationId <= 0)
+                throw new ArgumentException("DesignationId is required.");
         }
     }
-
 }

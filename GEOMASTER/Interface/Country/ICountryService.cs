@@ -7,7 +7,7 @@ namespace GEOMASTER.Interface.Country
     {
         List<CountryDTO> Search(string? searchTerm);
         List<CountryDTO> GetAllCountries();
-        Tblcountry GetCountryById(int id);
+        CountryDTO GetCountryById(int id);
 
         void CreateCountry(CountryDTO dto);
         void UpdateCountry(UpdateCountryDTO dto);
