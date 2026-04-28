@@ -12,101 +12,178 @@ namespace GEOMASTER.Service
         private readonly IStateRepository _stateRepo;
         private readonly ICountryRepository _countryRepo;
 
-        public CityService(ICityRepository cityRepo,
-                           IStateRepository stateRepo,
-                           ICountryRepository countryRepo)
+        public CityService(
+            ICityRepository cityRepo,
+            IStateRepository stateRepo,
+            ICountryRepository countryRepo)
         {
             _cityRepo = cityRepo;
             _stateRepo = stateRepo;
             _countryRepo = countryRepo;
         }
 
+        // =========================
+        // SEARCH
+        // =========================
         public List<CityResponseDTO> Search(string? searchTerm)
         {
-            return _cityRepo.Search(searchTerm).Select(MapToDTO).ToList();
+            return _cityRepo
+                .Search(searchTerm ?? string.Empty)
+                .Select(MapToDTO)
+                .ToList();
         }
 
+        // =========================
+        // GET ALL
+        // =========================
         public List<CityResponseDTO> GetAllCities()
         {
-            return _cityRepo.GetAll()
-                            .Select(MapToDTO)
-                            .ToList();
+            return _cityRepo
+                .GetAll()
+                .Select(MapToDTO)
+                .ToList();
         }
 
-        public CityResponseDTO? GetCityById(int id)
+        // =========================
+        // GET BY ID
+        // =========================
+        public CityResponseDTO GetCityById(int id)
         {
             var data = _cityRepo.GetById(id);
-            return data == null ? null : MapToDTO(data);
+
+            if (data == null)
+                throw new KeyNotFoundException($"City with ID {id} was not found.");
+
+            return MapToDTO(data);
         }
 
+        // =========================
+        // GET BY COUNTRY + STATE
+        // =========================
         public List<CityResponseDTO> GetCityByCountryState(int countryId, int stateId)
         {
-            return _cityRepo.GetByCountryState(countryId, stateId)
-                            .Select(MapToDTO)
-                            .ToList();
+            if (countryId <= 0)
+                throw new ArgumentException("Invalid CountryId.");
+
+            if (stateId <= 0)
+                throw new ArgumentException("Invalid StateId.");
+
+            return _cityRepo
+                .GetByCountryState(countryId, stateId)
+                .Select(MapToDTO)
+                .ToList();
         }
 
+        // =========================
+        // CREATE
+        // =========================
         public void CreateCity(CityDTO dto)
         {
-            // Validation
-            var country = _countryRepo.GetById(dto.CountryId);
-            var state = _stateRepo.GetById(dto.StateId);
+            ValidateCityRelationship(dto.CountryId, dto.StateId);
 
-            if (country == null)
-                throw new Exception("Invalid Country");
-
-            if (state == null)
-                throw new Exception("Invalid State");
-
-            if (state.CountryId != dto.CountryId)
-                throw new Exception("State does not belong to Country");
+            if (string.IsNullOrWhiteSpace(dto.CityName))
+                throw new ArgumentException("CityName is required.");
 
             var city = new Tblcity
             {
                 CountryId = dto.CountryId,
                 StateId = dto.StateId,
-                CityName = dto.CityName,
+                CityName = dto.CityName.Trim(),
 
                 IsActive = true,
                 IsDelete = false,
 
-                CreatedAt = DateTime.Now,
-                CreatedBy = "Admin" // later replace with logged-in user
+                CreatedAt = DateTime.UtcNow,
+                CreatedBy = "Admin"
             };
 
             _cityRepo.Add(city);
             _cityRepo.Save();
         }
 
+        // =========================
+        // UPDATE
+        // =========================
         public void UpdateCity(UpdateCityDTO dto)
         {
+            if (dto.Id <= 0)
+                throw new ArgumentException("Invalid City Id.");
+
+            if (string.IsNullOrWhiteSpace(dto.CityName))
+                throw new ArgumentException("CityName is required.");
+
             var existing = _cityRepo.GetById(dto.Id);
-            if (existing == null) return;
+
+            if (existing == null)
+                throw new KeyNotFoundException($"City with ID {dto.Id} was not found.");
+
+            ValidateCityRelationship(dto.CountryId, dto.StateId);
 
             existing.CountryId = dto.CountryId;
             existing.StateId = dto.StateId;
-            existing.CityName = dto.CityName;
+            existing.CityName = dto.CityName.Trim();
 
-            existing.UpdatedAt = DateTime.Now;
+            existing.UpdatedAt = DateTime.UtcNow;
             existing.UpdatedBy = "Admin";
 
             _cityRepo.Update(existing);
             _cityRepo.Save();
         }
 
+        // =========================
+        // DELETE
+        // =========================
         public void DeleteCity(int id)
         {
+            var existing = _cityRepo.GetById(id);
+
+            if (existing == null)
+                throw new KeyNotFoundException($"City with ID {id} was not found.");
+
             _cityRepo.Delete(id);
             _cityRepo.Save();
         }
 
+        // =========================
+        // ACTIVE STATUS
+        // =========================
         public void SetCityActive(int id, bool isActive)
         {
+            var existing = _cityRepo.GetById(id);
+
+            if (existing == null)
+                throw new KeyNotFoundException($"City with ID {id} was not found.");
+
             _cityRepo.SetActive(id, isActive);
             _cityRepo.Save();
         }
 
-        //  MAPPER (VERY IMPORTANT)
+        // =========================
+        // VALIDATE COUNTRY/STATE
+        // =========================
+        private void ValidateCityRelationship(int countryId, int stateId)
+        {
+            if (countryId <= 0)
+                throw new ArgumentException("Invalid CountryId.");
+
+            if (stateId <= 0)
+                throw new ArgumentException("Invalid StateId.");
+
+            var country = _countryRepo.GetById(countryId);
+            if (country == null)
+                throw new KeyNotFoundException("Country not found.");
+
+            var state = _stateRepo.GetById(stateId);
+            if (state == null)
+                throw new KeyNotFoundException("State not found.");
+
+            if (state.CountryId != countryId)
+                throw new ArgumentException("State does not belong to selected country.");
+        }
+
+        // =========================
+        // MAPPER
+        // =========================
         private CityResponseDTO MapToDTO(Tblcity c)
         {
             return new CityResponseDTO
