@@ -13,9 +13,8 @@ namespace GEOMASTER.Service
             _repo = repo;
         }
 
-        // =========================
         // GET ALL
-        // =========================
+
         public async Task<List<BusinessUnitResponseDTO>> GetAll()
         {
             var data = await _repo.GetAll();
@@ -26,9 +25,8 @@ namespace GEOMASTER.Service
             return data.Select(MapToDTO).ToList();
         }
 
-        // =========================
         // GET BY ID
-        // =========================
+
         public async Task<BusinessUnitResponseDTO> GetById(int id)
         {
             var data = await _repo.GetById(id);
@@ -41,9 +39,8 @@ namespace GEOMASTER.Service
             return MapToDTO(data);
         }
 
-        // =========================
         // CREATE
-        // =========================
+
         public async Task Create(CreateBusinessUnitDTO dto)
         {
             ValidateCreate(dto);
