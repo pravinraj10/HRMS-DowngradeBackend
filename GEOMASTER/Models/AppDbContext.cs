@@ -26,6 +26,8 @@ public partial class AppDbContext : DbContext
     public virtual DbSet<Tblrole> Tblroles { get; set; }
     public virtual DbSet<Tblemployee> Tblemployees { get; set; }
     public virtual DbSet<TblMenu> TblMenus { get; set; }
+
+    public virtual DbSet<Tblsignup> Tblsignup { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<TblMenu>(entity =>

@@ -9,6 +9,7 @@ using GEOMASTER.Interface.Employee;
 using GEOMASTER.Interface.Holiday;
 using GEOMASTER.Interface.Menu;
 using GEOMASTER.Interface.Role;
+using GEOMASTER.Interface.Signup;
 using GEOMASTER.Interface.State;
 using GEOMASTER.Models;
 using GEOMASTER.Repository;
@@ -27,6 +28,9 @@ builder.Services.AddControllers()
 //connection string
     builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+//signup
+builder.Services.AddScoped<ISignupRepository, SignupRepository>();
+builder.Services.AddScoped<ISignupService, SignupService>();
 //menu
 builder.Services.AddScoped<IMenuRepository, MenuRepository>();
 builder.Services.AddScoped<IMenuService, MenuService>();
