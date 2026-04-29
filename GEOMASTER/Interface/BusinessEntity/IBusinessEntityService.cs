@@ -1,10 +1,9 @@
-using GEOMASTER.Models;
-using System.Threading.Tasks;
+using GEOMASTER.DTO.BusinessEntity;
 
 namespace GEOMASTER.Interface.BusinessEntity
 {
     public interface IBusinessEntityService
     {
-        Task CreateEntityAsync(Tblbusinessentity entity);
+        Task CreateEntityAsync(BusinessEntityDTO dto);
     }
 }
