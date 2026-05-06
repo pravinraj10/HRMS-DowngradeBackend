@@ -26,6 +26,7 @@ public partial class AppDbContext : DbContext
     public virtual DbSet<Tblrole> Tblroles { get; set; }
     public virtual DbSet<Tblemployee> Tblemployees { get; set; }
     public virtual DbSet<TblMenu> TblMenus { get; set; }
+    public virtual DbSet<TblLogin> TblLogins { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<TblMenu>(entity =>
@@ -545,8 +546,33 @@ public partial class AppDbContext : DbContext
                 .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("FK_Employee_Role");
         });
+        modelBuilder.Entity<TblLogin>(entity =>
+        {
+            entity.ToTable("TblLogin");
 
-        OnModelCreatingPartial(modelBuilder);
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Username)
+                  .HasMaxLength(150)
+                  .IsRequired();
+
+            entity.Property(e => e.PasswordHash)
+                  .HasMaxLength(255)
+                  .IsRequired();
+
+            entity.Property(e => e.IsActive)
+                  .HasDefaultValue(true);
+
+            entity.Property(e => e.CreatedAt)
+                  .HasDefaultValueSql("GETUTCDATE()");
+
+            entity.HasOne(e => e.Employee)
+                  .WithMany()
+                  .HasForeignKey(e => e.EmployeeId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        base.OnModelCreating(modelBuilder);
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
