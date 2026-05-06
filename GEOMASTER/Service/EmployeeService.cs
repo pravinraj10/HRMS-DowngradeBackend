@@ -1,6 +1,8 @@
 ﻿using GEOMASTER.DTO.Employee;
 using GEOMASTER.Interface.Employee;
+using GEOMASTER.Interface.Login;
 using GEOMASTER.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace GEOMASTER.Service
 {
@@ -8,10 +10,12 @@ namespace GEOMASTER.Service
     {
         private readonly IEmployeeRepository _repo;
         private readonly IWebHostEnvironment _env;
+        private readonly ILoginRepository _loginRepo;
 
-        public EmployeeService(IEmployeeRepository repo, IWebHostEnvironment env)
+        public EmployeeService(IEmployeeRepository repo, ILoginRepository loginRepo, IWebHostEnvironment env)
         {
             _repo = repo;
+            _loginRepo = loginRepo;
             _env = env;
         }
 
@@ -45,34 +49,48 @@ namespace GEOMASTER.Service
         {
             Validate(dto);
 
+            if (dto.Password != dto.ConfirmPassword)
+                throw new Exception("Passwords do not match");
+
+            // Step 1: Save employee
             var entity = new Tblemployee
             {
                 FullName = dto.FullName.Trim(),
                 Gender = dto.Gender,
                 DateOfBirth = dto.DateOfBirth,
-
                 PersonalEmail = dto.PersonalEmail,
                 PersonalPhone = dto.PersonalPhone,
                 EmergencyContact = dto.EmergencyContact,
                 Address = dto.Address,
-
                 DepartmentId = dto.DepartmentId,
                 DesignationId = dto.DesignationId,
                 JoiningDate = dto.JoiningDate,
                 EmployeeCode = dto.EmployeeCode,
                 ReportingManagerId = dto.ReportingManagerId,
                 Shift = dto.Shift,
-
                 CreatedBy = dto.CreatedBy,
                 CreatedAt = DateTime.UtcNow,
                 IsActive = true,
                 IsDeleted = false,
-
                 ProfilePhoto = SaveFile(dto.ProfilePhoto),
                 IdProof = SaveFile(dto.IdProof)
             };
 
             await _repo.Add(entity);
+            entity.EmployeeCode = entity.Id.ToString();
+            await _repo.Update(entity);
+
+            // Step 2: Create login (IMPORTANT)
+            var login = new TblLogin
+            {
+                EmployeeId = entity.Id,
+                Username = dto.PersonalEmail,
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
+                IsActive = true
+            };
+
+            await _loginRepo.Add(login);
+            
         }
 
         // =========================
