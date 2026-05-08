@@ -6,5 +6,7 @@ namespace GEOMASTER.Interface.Login
     {
         Task<TblLogin?> GetByUsername(string username);
         Task Add(TblLogin login);
+        Task<TblLogin?> GetByEmployeeId(int employeeId);
+        Task Update(TblLogin login);
     }
 }
