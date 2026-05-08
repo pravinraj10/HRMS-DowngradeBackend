@@ -1,6 +1,8 @@
 ﻿using GEOMASTER.DTO.Login;
 using GEOMASTER.Interface.Jwt.GEOMASTER.Interface.Auth;
 using GEOMASTER.Interface.Login;
+using GEOMASTER.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace GEOMASTER.Service
 {
@@ -8,13 +10,18 @@ namespace GEOMASTER.Service
     {
         private readonly ILoginRepository _repo;
         private readonly IJwtService _jwt;
+        private readonly AppDbContext _context;
 
-        public LoginService(ILoginRepository repo, IJwtService jwt)
+        public LoginService(
+            ILoginRepository repo,
+            IJwtService jwt,
+            AppDbContext context
+        )
         {
             _repo = repo;
             _jwt = jwt;
+            _context = context;
         }
-
         public async Task<LoginResponseDTO> Login(LoginRequestDTO dto)
         {
             if (string.IsNullOrWhiteSpace(dto.Username) || string.IsNullOrWhiteSpace(dto.Password))
@@ -35,11 +42,18 @@ namespace GEOMASTER.Service
 
             var token = _jwt.GenerateToken(user.EmployeeId, user.Username, role);
 
+            var employee = await _context.Tblemployees
+                .FirstOrDefaultAsync(x => x.Id == user.EmployeeId);
+
             return new LoginResponseDTO
             {
                 EmployeeId = user.EmployeeId,
                 Username = user.Username,
-                Token = token
+                Token = token,
+
+                FullName = employee?.FullName,
+                Email = employee?.PersonalEmail,
+                ProfilePhoto = employee?.ProfilePhoto
             };
         }
     }

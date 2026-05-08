@@ -24,5 +24,16 @@ namespace GEOMASTER.Repository
             await _context.TblLogins.AddAsync(login);
             await _context.SaveChangesAsync();
         }
+        public async Task<TblLogin?> GetByEmployeeId(int employeeId)
+        {
+            return await _context.TblLogins
+                .FirstOrDefaultAsync(x => x.EmployeeId == employeeId);
+        }
+        public async Task Update(TblLogin login)
+        {
+            _context.TblLogins.Update(login);
+
+            await _context.SaveChangesAsync();
+        }
     }
 }

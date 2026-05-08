@@ -29,7 +29,7 @@ namespace GEOMASTER.Repository
                 .Include(x => x.Department)
                 .Include(x => x.Designation)
                 .Include(x => x.ReportingManager)
-                .FirstOrDefaultAsync(x => x.Id == id && x.IsActive && !x.IsDeleted);
+                .FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted);
         }
 
         public async Task Add(Tblemployee emp)
@@ -76,12 +76,19 @@ namespace GEOMASTER.Repository
         }
         public async Task<bool> SetActive(int id, bool isActive)
         {
-            var emp = await _context.Tblemployees.FindAsync(id);
-            if (emp == null) return false;
+            var emp = new Tblemployee
+            {
+                Id = id,
+                IsActive = isActive
+            };
 
-            emp.IsActive = isActive;
-            await _context.SaveChangesAsync();
-            return true;
+            _context.Tblemployees.Attach(emp);
+
+            _context.Entry(emp).Property(x => x.IsActive).IsModified = true;
+
+            var rows = await _context.SaveChangesAsync();
+
+            return rows > 0;
         }
         public async Task<List<Tblrole>> GetRolesDropdown()
         {
@@ -89,6 +96,7 @@ namespace GEOMASTER.Repository
                 .Where(x => x.IsActive && !x.IsDeleted)
                 .ToListAsync();
         }
+     
 
     }
 }

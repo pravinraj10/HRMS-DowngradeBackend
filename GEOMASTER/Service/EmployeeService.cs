@@ -52,6 +52,14 @@ namespace GEOMASTER.Service
             if (dto.Password != dto.ConfirmPassword)
                 throw new Exception("Passwords do not match");
 
+            // Employee code duplicate validation
+            var employees = await _repo.GetAll();
+
+            if (employees.Any(x => x.EmployeeCode == dto.EmployeeCode))
+            {
+                throw new Exception("Employee code already exists.");
+            }
+
             // Step 1: Save employee
             var entity = new Tblemployee
             {
@@ -77,8 +85,6 @@ namespace GEOMASTER.Service
             };
 
             await _repo.Add(entity);
-            entity.EmployeeCode = entity.Id.ToString();
-            await _repo.Update(entity);
 
             // Step 2: Create login (IMPORTANT)
             var login = new TblLogin
@@ -129,6 +135,18 @@ namespace GEOMASTER.Service
             if (dto.IdProof != null)
                 existing.IdProof = SaveFile(dto.IdProof);
 
+            if (!string.IsNullOrWhiteSpace(dto.Password))
+            {
+                var login = await _loginRepo.GetByEmployeeId(existing.Id);
+
+                if (login != null)
+                {
+                    login.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password);
+
+                    await _loginRepo.Update(login);
+                }
+            }
+
             await _repo.Update(existing);
             return true;
         }
@@ -161,12 +179,21 @@ namespace GEOMASTER.Service
         // =========================
         public async Task<bool> SetActive(int id, bool isActive)
         {
-            var existing = await _repo.GetById(id);
+            // Update employee table
+            var result = await _repo.SetActive(id, isActive);
 
-            if (existing == null)
-                throw new KeyNotFoundException($"Employee with ID {id} not found.");
+            // Fetch login row
+            var login = await _loginRepo.GetByEmployeeId(id);
 
-            return await _repo.SetActive(id, isActive);
+            // Update login table
+            if (login != null)
+            {
+                login.IsActive = isActive;
+
+                await _loginRepo.Update(login);
+            }
+
+            return result;
         }
 
         // =========================
