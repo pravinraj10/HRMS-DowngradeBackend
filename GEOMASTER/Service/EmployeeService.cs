@@ -32,7 +32,7 @@ namespace GEOMASTER.Service
         // =========================
         // GET BY ID
         // =========================
-        public async Task<EmployeeResponseDTO> GetById(int id)
+        public async Task<EmployeeResponseDTO>GetById(int id)
         {
             var x = await _repo.GetById(id);
 
@@ -150,7 +150,6 @@ namespace GEOMASTER.Service
             await _repo.Update(existing);
             return true;
         }
-
         // =========================
         // DELETE
         // =========================

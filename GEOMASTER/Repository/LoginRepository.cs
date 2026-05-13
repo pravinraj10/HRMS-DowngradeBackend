@@ -35,5 +35,17 @@ namespace GEOMASTER.Repository
 
             await _context.SaveChangesAsync();
         }
+        public async Task<TblLogin?> GetByEmail(string email)
+        {
+            return await _context.TblLogins
+                .FirstOrDefaultAsync(x => x.Username == email);
+        }
+
+        public async Task<TblLogin?> GetByResetToken(string token)
+        {
+            return await _context.TblLogins
+                .FirstOrDefaultAsync(x =>
+                    x.PasswordResetToken == token);
+        }
     }
 }

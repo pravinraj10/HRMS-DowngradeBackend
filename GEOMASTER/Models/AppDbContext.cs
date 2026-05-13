@@ -570,6 +570,10 @@ public partial class AppDbContext : DbContext
                   .WithMany()
                   .HasForeignKey(e => e.EmployeeId)
                   .OnDelete(DeleteBehavior.Cascade);
+            entity.Property(e => e.PasswordResetToken)
+                  .HasMaxLength(500);
+
+            entity.Property(e => e.PasswordResetTokenExpiry);
         });
 
         base.OnModelCreating(modelBuilder);
