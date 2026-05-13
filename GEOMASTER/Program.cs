@@ -4,6 +4,7 @@ using GEOMASTER.Interface.City;
 using GEOMASTER.Interface.Country;
 using GEOMASTER.Interface.Department;
 using GEOMASTER.Interface.Designation;
+using GEOMASTER.Interface.Email;
 using GEOMASTER.Interface.Employee;
 using GEOMASTER.Interface.Holiday;
 using GEOMASTER.Interface.Jwt.GEOMASTER.Interface.Auth;
@@ -14,10 +15,12 @@ using GEOMASTER.Interface.State;
 using GEOMASTER.Models;
 using GEOMASTER.Repository;
 using GEOMASTER.Service;
+using GEOMASTER.Service.Email;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using GEOMASTER.Configurations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -76,41 +79,48 @@ builder.Services.AddScoped<ILoginRepository, LoginRepository>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<ILoginService, LoginService>();
 
+//smtp config
+builder.Services.Configure<SmtpSettings>(
+    builder.Configuration.GetSection("SmtpSettings"));
+
 // =========================
 // OTHER SERVICES
 // =========================
+//menu
 builder.Services.AddScoped<IMenuRepository, MenuRepository>();
 builder.Services.AddScoped<IMenuService, MenuService>();
-
+// country
 builder.Services.AddScoped<ICountryRepository, CountryRepository>();
 builder.Services.AddScoped<ICountryService, CountryService>();
-
+//state
 builder.Services.AddScoped<IStateRepository, StateRepository>();
 builder.Services.AddScoped<IStateService, StateService>();
-
+//city
 builder.Services.AddScoped<ICityRepository, CityRepository>();
 builder.Services.AddScoped<ICityService, CityService>();
-
+// business unit
 builder.Services.AddScoped<IBusinessUnitRepository, BusinessUnitRepository>();
 builder.Services.AddScoped<IBusinessUnitService, BusinessUnitService>();
-
+// business entity
 builder.Services.AddScoped<IBusinessEntityRepository, BusinessEntityRepository>();
 builder.Services.AddScoped<IBusinessEntityService, BusinessEntityService>();
-
+//holiday
 builder.Services.AddScoped<IHolidayService, HolidayService>();
 builder.Services.AddScoped<IHolidayRepository, HolidayRepository>();
-
+// department
 builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
-
+//designation
 builder.Services.AddScoped<IDesignationRepository, DesignationRepository>();
 builder.Services.AddScoped<IDesignationService, DesignationService>();
-
+//role
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IRoleService, RoleService>();
-
+//employee
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+//email
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 // =========================
 // SWAGGER

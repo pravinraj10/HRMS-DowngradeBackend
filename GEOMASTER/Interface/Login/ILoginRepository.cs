@@ -8,5 +8,7 @@ namespace GEOMASTER.Interface.Login
         Task Add(TblLogin login);
         Task<TblLogin?> GetByEmployeeId(int employeeId);
         Task Update(TblLogin login);
+        Task<TblLogin?> GetByEmail(string email);
+        Task<TblLogin?> GetByResetToken(string token);
     }
 }
