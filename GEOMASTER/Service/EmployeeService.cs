@@ -157,6 +157,7 @@ namespace GEOMASTER.Service
         {
             var existing = await _repo.GetById(id);
 
+
             if (existing == null)
                 throw new KeyNotFoundException($"Employee with ID {id} not found.");
 

@@ -30,14 +30,16 @@ namespace GEOMASTER.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(CreateRoleDTO dto)
+        public async Task<IActionResult> Create( [FromBody] CreateRoleDTO dto)
         {
             await _service.Create(dto);
+            Console.WriteLine(dto.SideMenu);
             return Ok("Created Successfully");
+
         }
 
         [HttpPut]
-        public async Task<IActionResult> Update(UpdateRoleDTO dto)
+        public async Task<IActionResult> Update([FromBody] UpdateRoleDTO dto)
         {
             await _service.Update(dto);
             return Ok("Updated Successfully");

@@ -1,40 +1,27 @@
-﻿namespace GEOMASTER.Models
+﻿using GEOMASTER.Models;
+
+public partial class Tblrole
 {
-    using System;
-    using System.Collections.Generic;
+    public int Id { get; set; }
 
-    namespace GEOMASTER.Models
-    {
-        public partial class Tblrole
-        {
-            public int Id { get; set; }
+    public string RoleName { get; set; } = null!;
 
-            public string RoleName { get; set; } = null!;
+    public string? Description { get; set; }
 
-            public int DepartmentId { get; set; }
+    public string? SideMenu { get; set; }
 
-            public string? RoleType { get; set; }
+    public bool IsActive { get; set; }
 
-            public string? Description { get; set; }
+    public bool IsDeleted { get; set; }
 
-            public bool IsActive { get; set; }
+    public DateTime? CreatedAt { get; set; }
 
-            public bool IsDeleted { get; set; }
+    public DateTime? UpdatedAt { get; set; }
 
-            public DateTime? CreatedAt { get; set; }
+    public string? CreatedBy { get; set; }
 
-            public DateTime? UpdatedAt { get; set; }
+    public string? UpdatedBy { get; set; }
 
-            public string? CreatedBy { get; set; }
-
-            public string? UpdatedBy { get; set; }
-
-            //  Navigation Properties
-            public virtual Tbldepartment? Department { get; set; }
-
-            public virtual ICollection<Tblemployee> Employees { get; set; }
-                = new List<Tblemployee>();
-
-        }
-    }
+    public virtual ICollection<Tblemployee> Employees { get; set; }
+        = new List<Tblemployee>();
 }

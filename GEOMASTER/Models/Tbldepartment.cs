@@ -1,5 +1,4 @@
-﻿using GEOMASTER.Models.GEOMASTER.Models;
-
+﻿
 namespace GEOMASTER.Models
 {
     public class Tbldepartment
@@ -18,7 +17,6 @@ namespace GEOMASTER.Models
         public string? UpdatedBy { get; set; }
 
         public virtual ICollection<Tbldesignation> Tbldesignations { get; set; } = new List<Tbldesignation>();
-        public virtual ICollection<Tblrole> Tblroles { get; set; } = new List<Tblrole>();
         public virtual ICollection<Tblemployee> Tblemployees { get; set; } = new List<Tblemployee>();
     }
 }

@@ -1,5 +1,4 @@
-﻿using GEOMASTER.Models.GEOMASTER.Models;
-
+﻿
 namespace GEOMASTER.Interface.Role
 {
     public interface IRoleRepository

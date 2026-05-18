@@ -1,9 +1,6 @@
 ﻿using GEOMASTER.Models;
-using GEOMASTER.Models.GEOMASTER.Models;
-
 namespace GEOMASTER.Interface.Employee
 {
-
     public interface IEmployeeRepository
     {
         Task<List<Tblemployee>> GetAll();
@@ -14,6 +11,5 @@ namespace GEOMASTER.Interface.Employee
         Task<bool> SetActive(int id, bool isActive);
         Task<List<Tblemployee>> Search(string? search);
         Task<List<Tblrole>> GetRolesDropdown();
-       
     }
 }
