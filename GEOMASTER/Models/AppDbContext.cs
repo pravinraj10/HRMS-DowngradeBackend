@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using GEOMASTER.Models.GEOMASTER.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace GEOMASTER.Models;
@@ -420,15 +419,11 @@ public partial class AppDbContext : DbContext
                 .HasColumnName("role_name")
                 .HasMaxLength(100);
 
-            entity.Property(e => e.DepartmentId)
-                .HasColumnName("department_id");
-
-            entity.Property(e => e.RoleType)
-                .HasColumnName("role_type")
-                .HasMaxLength(50);
-
             entity.Property(e => e.Description)
                 .HasColumnName("description");
+
+            entity.Property(e => e.SideMenu)
+                .HasColumnName("side_menu");
 
             entity.Property(e => e.IsActive)
                 .HasColumnName("is_active")
@@ -449,12 +444,6 @@ public partial class AppDbContext : DbContext
 
             entity.Property(e => e.UpdatedBy)
                 .HasColumnName("updated_by");
-
-            //  FK RELATION
-            entity.HasOne(d => d.Department)
-                .WithMany(p => p.Tblroles) 
-                .HasForeignKey(d => d.DepartmentId)
-                .HasConstraintName("FK_Role_Department");
         });
         modelBuilder.Entity<Tblemployee>(entity =>
         {

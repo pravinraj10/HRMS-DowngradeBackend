@@ -98,16 +98,16 @@ builder.Services.AddScoped<IStateService, StateService>();
 //city
 builder.Services.AddScoped<ICityRepository, CityRepository>();
 builder.Services.AddScoped<ICityService, CityService>();
-// business unit
+//business unit
 builder.Services.AddScoped<IBusinessUnitRepository, BusinessUnitRepository>();
 builder.Services.AddScoped<IBusinessUnitService, BusinessUnitService>();
-// business entity
+//business entity
 builder.Services.AddScoped<IBusinessEntityRepository, BusinessEntityRepository>();
 builder.Services.AddScoped<IBusinessEntityService, BusinessEntityService>();
 //holiday
 builder.Services.AddScoped<IHolidayService, HolidayService>();
 builder.Services.AddScoped<IHolidayRepository, HolidayRepository>();
-// department
+//department
 builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 //designation

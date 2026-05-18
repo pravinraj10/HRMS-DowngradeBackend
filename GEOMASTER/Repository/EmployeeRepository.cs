@@ -1,6 +1,5 @@
 ﻿using GEOMASTER.Interface.Employee;
 using GEOMASTER.Models;
-using GEOMASTER.Models.GEOMASTER.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace GEOMASTER.Repository

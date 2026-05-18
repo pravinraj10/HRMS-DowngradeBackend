@@ -4,6 +4,7 @@ using GEOMASTER.Interface.Jwt.GEOMASTER.Interface.Auth;
 using GEOMASTER.Interface.Login;
 using GEOMASTER.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography;
 
 namespace GEOMASTER.Service
 {
@@ -57,7 +58,7 @@ namespace GEOMASTER.Service
 
                 FullName = employee?.FullName,
                 Email = employee?.PersonalEmail,
-                ProfilePhoto = employee?.ProfilePhoto
+                ProfilePhoto = employee?.ProfilePhoto,
             };
         }
         public async Task ForgotPassword(ForgotPasswordDTO dto)
@@ -67,7 +68,8 @@ namespace GEOMASTER.Service
             if (login == null)
                 throw new Exception("Email not found");
 
-            var token = Guid.NewGuid().ToString();
+            var token = Convert.ToBase64String(
+                        RandomNumberGenerator.GetBytes(64));
 
             login.PasswordResetToken = token;
 
@@ -132,7 +134,6 @@ namespace GEOMASTER.Service
             if (!password.Any(char.IsLower))
                 throw new Exception(
                     "Password must contain at least one lowercase letter");
-
             if (!password.Any(char.IsDigit))
                 throw new Exception(
                     "Password must contain at least one number");
