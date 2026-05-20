@@ -75,6 +75,7 @@ namespace GEOMASTER.Service
                 JoiningDate = dto.JoiningDate,
                 EmployeeCode = dto.EmployeeCode,
                 ReportingManagerId = dto.ReportingManagerId,
+                RoleId = dto.RoleId,
                 Shift = dto.Shift,
                 CreatedBy = dto.CreatedBy,
                 CreatedAt = DateTime.UtcNow,
@@ -255,7 +256,8 @@ namespace GEOMASTER.Service
                 DesignationName = x.Designation?.DesignationName,
 
                 ReportingManagerId = x.ReportingManagerId,
-                ReportingManagerName = x.ReportingManager?.RoleName,
+                //ReportingManagerName = x.ReportingManagerName,
+
 
                 EmployeeCode = x.EmployeeCode,
                 JoiningDate = x.JoiningDate,

@@ -1,4 +1,4 @@
-﻿using GEOMASTER.DTO.Login;
+using GEOMASTER.DTO.Login;
 using GEOMASTER.Interface.Email;
 using GEOMASTER.Interface.Jwt.GEOMASTER.Interface.Auth;
 using GEOMASTER.Interface.Login;
@@ -42,13 +42,14 @@ namespace GEOMASTER.Service
             if (!isValid)
                 throw new Exception("Invalid password");
 
-            // TODO: Fetch role from DB
-            string role = "User";
-
-            var token = _jwt.GenerateToken(user.EmployeeId, user.Username, role);
-
             var employee = await _context.Tblemployees
+                .Include(x => x.Role)
                 .FirstOrDefaultAsync(x => x.Id == user.EmployeeId);
+
+            string role = employee?.Role?.RoleName ?? "User";
+            string permissions = employee?.Role?.SideMenu ?? "[]";
+
+            var token = _jwt.GenerateToken(user.EmployeeId, user.Username, role, permissions);
 
             return new LoginResponseDTO
             {
@@ -59,6 +60,9 @@ namespace GEOMASTER.Service
                 FullName = employee?.FullName,
                 Email = employee?.PersonalEmail,
                 ProfilePhoto = employee?.ProfilePhoto,
+
+                RoleName = role,
+                SideMenu = permissions
             };
         }
         public async Task ForgotPassword(ForgotPasswordDTO dto)
@@ -68,8 +72,7 @@ namespace GEOMASTER.Service
             if (login == null)
                 throw new Exception("Email not found");
 
-            var token = Convert.ToBase64String(
-                        RandomNumberGenerator.GetBytes(64));
+            var token = Guid.NewGuid().ToString();
 
             login.PasswordResetToken = token;
 
@@ -79,7 +82,7 @@ namespace GEOMASTER.Service
             await _repo.Update(login);
 
             var resetLink =
-                $"https://localhost:3000/login?page=resetPassword&token={token}";
+                $"http://localhost:3000/login?page=resetPassword&token={token}";
 
             var body = $@"
                <h3>Password Reset</h3>

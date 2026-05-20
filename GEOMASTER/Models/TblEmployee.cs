@@ -1,4 +1,4 @@
-﻿
+
 namespace GEOMASTER.Models
 {
     public class Tblemployee
@@ -27,7 +27,16 @@ namespace GEOMASTER.Models
         public int? ReportingManagerId { get; set; }
 
         // Navigation property
-        public virtual Tblrole? ReportingManager { get; set; }
+        public virtual Tblemployee? ReportingManager { get; set; }
+
+        public virtual ICollection<Tblemployee>
+    Subordinates
+        { get; set; }
+    = new List<Tblemployee>();
+
+        // Proper Role Mapping
+        public int? RoleId { get; set; }
+        public virtual Tblrole? Role { get; set; }
 
         public string? Shift { get; set; }
 
@@ -42,4 +51,4 @@ namespace GEOMASTER.Models
         public bool IsActive { get; set; } = true;
         public bool IsDeleted { get; set; } = false;
     }
-}
+}           

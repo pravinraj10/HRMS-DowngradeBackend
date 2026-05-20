@@ -1,4 +1,4 @@
-﻿namespace GEOMASTER.DTO.Login
+namespace GEOMASTER.DTO.Login
 {
     public class LoginResponseDTO
     {
@@ -8,5 +8,7 @@
         public string? FullName { get; set; }
         public string? Email { get; set; }
         public string? ProfilePhoto { get; set; }
+        public string? RoleName { get; set; }
+        public string? SideMenu { get; set; }
     }
 }

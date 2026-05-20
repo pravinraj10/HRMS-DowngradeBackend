@@ -1,4 +1,4 @@
-﻿using GEOMASTER.Interface.Jwt.GEOMASTER.Interface.Auth;
+using GEOMASTER.Interface.Jwt.GEOMASTER.Interface.Auth;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -15,7 +15,7 @@ namespace GEOMASTER.Service
             _config = config;
         }
 
-        public string GenerateToken(int userId, string username, string role)
+        public string GenerateToken(int userId, string username, string role, string permissions)
         {
             var key = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(_config["Jwt:Key"])
@@ -28,7 +28,8 @@ namespace GEOMASTER.Service
                 new Claim(JwtRegisteredClaimNames.Sub, username),
                 new Claim("UserId", userId.ToString()),
                 new Claim(ClaimTypes.Name, username),
-                new Claim(ClaimTypes.Role, role)
+                new Claim(ClaimTypes.Role, role),
+                new Claim("Permissions", permissions)
             };
 
             var token = new JwtSecurityToken(
