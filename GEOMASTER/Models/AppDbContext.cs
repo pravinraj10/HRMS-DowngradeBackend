@@ -528,12 +528,20 @@ public partial class AppDbContext : DbContext
                 .HasForeignKey(e => e.DesignationId)
                 .HasConstraintName("FK_emp_designation");
 
-            // Reporting Manager FK -> tblroles
             entity.HasOne(e => e.ReportingManager)
+                 .WithMany(e => e.Subordinates)
+                 .HasForeignKey(e => e.ReportingManagerId)
+                 .OnDelete(DeleteBehavior.Restrict)
+                 .HasConstraintName("FK_emp_reporting_manager");
+
+            // Role mapping
+            entity.Property(e => e.RoleId)
+                .HasColumnName("RoleId");
+
+            entity.HasOne(x => x.Role)
                 .WithMany(r => r.Employees)
-                .HasForeignKey(e => e.ReportingManagerId)
-                .OnDelete(DeleteBehavior.Restrict)
-                .HasConstraintName("FK_Employee_Role");
+                .HasForeignKey(x => x.RoleId)
+                .HasConstraintName("FK_emp_role");
         });
         modelBuilder.Entity<TblLogin>(entity =>
         {

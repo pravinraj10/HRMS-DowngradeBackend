@@ -1,12 +1,14 @@
-﻿using GEOMASTER.DTO.Employee;
+using GEOMASTER.DTO.Employee;
 using GEOMASTER.Interface.Employee;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GEOMASTER.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Roles = "Admin,HR")]
     public class EmployeeController : ControllerBase
     {
         private readonly IEmployeeService _service;

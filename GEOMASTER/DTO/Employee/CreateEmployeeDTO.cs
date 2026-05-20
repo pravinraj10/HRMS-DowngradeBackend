@@ -19,6 +19,8 @@
         //  FILES
         public IFormFile? ProfilePhoto { get; set; }
         public IFormFile? IdProof { get; set; }
+        public int? RoleId { get; set; }
+
         //pasword
         public string? Password { get; set; }
         public string? ConfirmPassword { get; set; }
