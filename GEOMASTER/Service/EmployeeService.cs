@@ -1,4 +1,4 @@
-﻿using GEOMASTER.DTO.Employee;
+using GEOMASTER.DTO.Employee;
 using GEOMASTER.Interface.Employee;
 using GEOMASTER.Interface.Login;
 using GEOMASTER.Models;
@@ -67,9 +67,13 @@ namespace GEOMASTER.Service
                 Gender = dto.Gender,
                 DateOfBirth = dto.DateOfBirth,
                 PersonalEmail = dto.PersonalEmail,
+                OfficeEmail = dto.OfficeEmail,
                 PersonalPhone = dto.PersonalPhone,
                 EmergencyContact = dto.EmergencyContact,
                 Address = dto.Address,
+                CountryId = dto.CountryId,
+                StateId = dto.StateId,
+                CityId = dto.CityId,
                 DepartmentId = dto.DepartmentId,
                 DesignationId = dto.DesignationId,
                 JoiningDate = dto.JoiningDate,
@@ -115,12 +119,14 @@ namespace GEOMASTER.Service
             existing.FullName = dto.FullName.Trim();
             existing.Gender = dto.Gender;
             existing.DateOfBirth = dto.DateOfBirth;
-
             existing.PersonalEmail = dto.PersonalEmail;
+            existing.OfficeEmail = dto.OfficeEmail;
             existing.PersonalPhone = dto.PersonalPhone;
             existing.EmergencyContact = dto.EmergencyContact;
             existing.Address = dto.Address;
-
+            existing.CountryId = dto.CountryId;
+            existing.StateId = dto.StateId;
+            existing.CityId = dto.CityId;
             existing.DepartmentId = dto.DepartmentId;
             existing.DesignationId = dto.DesignationId;
             existing.JoiningDate = dto.JoiningDate;
@@ -243,29 +249,28 @@ namespace GEOMASTER.Service
                 FullName = x.FullName,
                 Gender = x.Gender,
                 DateOfBirth = x.DateOfBirth,
-
+                OfficeEmail = x.OfficeEmail,
                 PersonalEmail = x.PersonalEmail,
                 PersonalPhone = x.PersonalPhone,
                 EmergencyContact = x.EmergencyContact,
                 Address = x.Address,
-
+                CountryId = x.CountryId,
+                StateId = x.StateId,
+                CityId = x.CityId,
+                CountryName = x.Country?.CountryName,
+                StateName = x.State?.StateName,
+                CityName = x.City?.CityName,
                 DepartmentId = x.DepartmentId,
                 DepartmentName = x.Department?.DepartmentName,
-
                 DesignationId = x.DesignationId,
                 DesignationName = x.Designation?.DesignationName,
-
                 ReportingManagerId = x.ReportingManagerId,
                 //ReportingManagerName = x.ReportingManagerName,
-
-
                 EmployeeCode = x.EmployeeCode,
                 JoiningDate = x.JoiningDate,
                 Shift = x.Shift,
-
                 ProfilePhoto = x.ProfilePhoto,
                 IdProof = x.IdProof,
-
                 IsActive = x.IsActive,
                 CreatedBy = x.CreatedBy
             };

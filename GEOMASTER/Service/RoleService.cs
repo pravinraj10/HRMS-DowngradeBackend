@@ -1,4 +1,4 @@
-﻿using GEOMASTER.DTO.Roles;
+using GEOMASTER.DTO.Roles;
 using GEOMASTER.Interface.Role;
 
 namespace GEOMASTER.Service
@@ -134,7 +134,9 @@ namespace GEOMASTER.Service
 
                 SideMenu = x.SideMenu,
 
-                IsActive = x.IsActive
+                IsActive = x.IsActive,
+
+                AssignedUsers = x.Employees?.Count(e => !e.IsDeleted) ?? 0
             };
         }
 

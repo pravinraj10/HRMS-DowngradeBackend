@@ -57,6 +57,11 @@ namespace GEOMASTER.Repository
             var state = _context.Tblstates.Find(id);
             if (state != null)
             {
+                if (_context.Tblemployees.Any(e => e.StateId == id && !e.IsDeleted))
+                {
+                    throw new System.InvalidOperationException("Cannot delete state because employees are assigned to it.");
+                }
+
                 state.IsDelete = true;
 
                 //  Delete related cities

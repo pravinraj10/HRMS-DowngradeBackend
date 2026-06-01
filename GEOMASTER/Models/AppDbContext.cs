@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 
 namespace GEOMASTER.Models;
@@ -466,6 +464,10 @@ public partial class AppDbContext : DbContext
                 .HasColumnName("personal_email")
                 .HasMaxLength(100);
 
+            entity.Property(e => e.OfficeEmail)
+                .HasColumnName("office_email")
+                .HasMaxLength(100);
+
             entity.Property(e => e.PersonalPhone)
                 .HasColumnName("personal_phone")
                 .HasMaxLength(20);
@@ -576,5 +578,4 @@ public partial class AppDbContext : DbContext
         base.OnModelCreating(modelBuilder);
     }
 
-    partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 }
