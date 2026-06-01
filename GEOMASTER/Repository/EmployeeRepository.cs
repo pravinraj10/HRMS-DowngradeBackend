@@ -1,4 +1,4 @@
-﻿using GEOMASTER.Interface.Employee;
+using GEOMASTER.Interface.Employee;
 using GEOMASTER.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,19 +16,27 @@ namespace GEOMASTER.Repository
         public async Task<List<Tblemployee>> GetAll()
         {
             return await _context.Tblemployees
-                .Where(x => !x.IsDeleted)
-                .Include(x => x.Department)
-                .Include(x => x.Designation)
-                 .Include(x => x.ReportingManager)
-                .ToListAsync();
+            .Where(x => !x.IsDeleted)
+            .Include(x => x.Country)
+            .Include(x => x.State)
+            .Include(x => x.City)
+            .Include(x => x.Department)
+            .Include(x => x.Designation)
+            .Include(x => x.ReportingManager)
+            .Include(x => x.Role)
+            .ToListAsync();
         }
         public async Task<Tblemployee?> GetById(int id)
         {
             return await _context.Tblemployees
-                .Include(x => x.Department)
-                .Include(x => x.Designation)
-                .Include(x => x.ReportingManager)
-                .FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted);
+           .Include(x => x.Country)
+           .Include(x => x.State)
+           .Include(x => x.City)
+           .Include(x => x.Department)
+           .Include(x => x.Designation)
+           .Include(x => x.ReportingManager)
+           .Include(x => x.Role)
+           .FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted);
         }
 
         public async Task Add(Tblemployee emp)

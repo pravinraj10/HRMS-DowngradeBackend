@@ -1,4 +1,4 @@
-﻿namespace GEOMASTER.DTO.Employee
+namespace GEOMASTER.DTO.Employee
 {
     public class CreateEmployeeDTO
     {
@@ -6,9 +6,13 @@
         public string? Gender { get; set; }
         public DateTime? DateOfBirth { get; set; }
         public string? PersonalEmail { get; set; }
+        public string? OfficeEmail { get; set; }
         public string? PersonalPhone { get; set; }
         public string? EmergencyContact { get; set; }
         public string? Address { get; set; }
+        public int? CountryId { get; set; }
+        public int? StateId { get; set; }
+        public int? CityId { get; set; }
         public int? DepartmentId { get; set; }
         public int? DesignationId { get; set; }
         public DateTime? JoiningDate { get; set; }
@@ -20,7 +24,6 @@
         public IFormFile? ProfilePhoto { get; set; }
         public IFormFile? IdProof { get; set; }
         public int? RoleId { get; set; }
-
         //pasword
         public string? Password { get; set; }
         public string? ConfirmPassword { get; set; }

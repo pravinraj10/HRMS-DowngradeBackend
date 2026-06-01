@@ -1,4 +1,4 @@
-﻿using GEOMASTER.Interface.Role;
+using GEOMASTER.Interface.Role;
 using GEOMASTER.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,6 +16,7 @@ namespace GEOMASTER.Repository
         public async Task<List<Tblrole>> GetAll()
         {
             return await _context.Tblroles
+                .Include(x => x.Employees)
                 .Where(x => x.IsDeleted != true)
                 .OrderByDescending(x => x.CreatedAt)
                 .ToListAsync();
@@ -24,6 +25,7 @@ namespace GEOMASTER.Repository
         public async Task<Tblrole?> GetById(int id)
         {
             return await _context.Tblroles
+                .Include(x => x.Employees)
                 .FirstOrDefaultAsync(x =>
                     x.Id == id &&
                     x.IsDeleted != true);
@@ -76,6 +78,7 @@ namespace GEOMASTER.Repository
         public async Task<List<Tblrole>> Search(string keyword)
         {
             return await _context.Tblroles
+                .Include(x => x.Employees)
                 .Where(x =>
                     x.IsDeleted != true &&
                     x.RoleName.Contains(keyword))

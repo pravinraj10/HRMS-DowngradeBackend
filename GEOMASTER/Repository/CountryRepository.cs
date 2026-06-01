@@ -10,7 +10,6 @@ public class CountryRepository : ICountryRepository
     {
         _context = context;
     }
-
     public List<Tblcountry> Search(string? searchTerm)
     {
         var query = _context.Tblcountries.Where(c => c.IsDelete == false);
@@ -20,14 +19,12 @@ public class CountryRepository : ICountryRepository
         }
         return query.ToList();
     }
-
     public List<Tblcountry> GetAllCountries()
     {
         return _context.Tblcountries
             .Where(c => c.IsDelete == false)
             .ToList();
     }
-
     public Tblcountry GetById(int id)
     {
         return _context.Tblcountries
@@ -49,6 +46,11 @@ public class CountryRepository : ICountryRepository
         var country = _context.Tblcountries.Find(id);
         if (country != null)
         {
+            if (_context.Tblemployees.Any(e => e.CountryId == id && !e.IsDeleted))
+            {
+                throw new System.InvalidOperationException("Cannot delete country because employees are assigned to it.");
+            }
+
             country.IsDelete = true;
 
             //  Delete related states
@@ -66,7 +68,6 @@ public class CountryRepository : ICountryRepository
             }
         }
     }
-
     public void Disable(int id)
     {
         var data = _context.Tblcountries.Find(id);
@@ -75,7 +76,6 @@ public class CountryRepository : ICountryRepository
             data.IsActive = !(data.IsActive ?? false);
         }
     }
-
     public bool SetActive(int id, bool isActive)
     {
         var data = _context.Tblcountries.Find(id);
@@ -84,7 +84,6 @@ public class CountryRepository : ICountryRepository
         data.IsActive = isActive;
         return true;
     }
-
     public void Save()
     {
         _context.SaveChanges();

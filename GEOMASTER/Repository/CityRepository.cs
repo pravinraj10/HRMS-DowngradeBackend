@@ -61,6 +61,10 @@ namespace GEOMASTER.Repository
             var data = _context.Tblcities.Find(id);
             if (data != null)
             {
+                if (_context.Tblemployees.Any(e => e.CityId == id && !e.IsDeleted))
+                {
+                    throw new System.InvalidOperationException("Cannot delete city because employees are assigned to it.");
+                }
                 data.IsDelete = true;
             }
         }
